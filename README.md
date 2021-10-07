@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator in Jittor.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2 in Jittor.
 
 
 
@@ -20,6 +20,12 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator in Jitto
 * Jittor and Pytorch implementaion of [ResMLP: Feedforward networks for image classification with data-efficient training](https://arxiv.org/abs/2105.03404).
 
 ![](imgs/resmlp.png)
+
+* Jittor and Pytorch implementaion of [S2-MLPv2: Improved Spatial-Shift MLP Architecture for Vision](https://arxiv.org/abs/2108.01072).
+
+  ![](imgs/s2mlpv2.png)
+
+
 
 
 
@@ -89,6 +95,17 @@ images = jt.randn(8, 3, 224, 112)
 with jt.no_grad():
     output = model_jt(images)
 print(output.shape) # （8， 1000）
+
+############################## 2 Stages S2MLPv2 #########################
+model_pt = S2MLPv2_pt(
+    in_channels = 3,
+    image_size = (224,224),
+    patch_size = [(7,7), (2,2)],
+    d_model = [192, 384],
+    depth = [4, 14],
+    num_classes = 1000, 
+    expansion_factor = [3, 3]
+)
 ```
 
 
@@ -131,6 +148,15 @@ print(output.shape) # （8， 1000）
   title={Resmlp: Feedforward networks for image classification with data-efficient training},
   author={Touvron, Hugo and Bojanowski, Piotr and Caron, Mathilde and Cord, Matthieu and El-Nouby, Alaaeldin and Grave, Edouard and Joulin, Armand and Synnaeve, Gabriel and Verbeek, Jakob and J{\'e}gou, Herv{\'e}},
   journal={arXiv preprint arXiv:2105.03404},
+  year={2021}
+}
+```
+
+```bibtex
+@article{yu2021s,
+  title={S $\^{} 2$-MLPv2: Improved Spatial-Shift MLP Architecture for Vision},
+  author={Yu, Tan and Li, Xu and Cai, Yunfeng and Sun, Mingming and Li, Ping},
+  journal={arXiv preprint arXiv:2108.01072},
   year={2021}
 }
 ```

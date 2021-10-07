@@ -1,3 +1,6 @@
+from typing import List
+
+
 def pair(val):
     return (val, val) if not isinstance(val, tuple) else val
 
