@@ -199,6 +199,7 @@ class ViP(nn.Module):
         d_model=256,
         depth=30,
         segments = 14,
+        expansion_factor = 4,
         weighted = True
     ):
         image_size = pair(image_size)
@@ -214,9 +215,9 @@ class ViP(nn.Module):
         )
 
         if weighted:
-            self.blocks = WeightedPermutator(height, width, d_model, depth, segments, expansion_factor = 4, dropout = 0.)
+            self.blocks = WeightedPermutator(height, width, d_model, depth, segments, expansion_factor, dropout = 0.)
         else:
-            self.blocks = Permutator(height, width, d_model, depth, segments, expansion_factor = 4, dropout = 0.)
+            self.blocks = Permutator(height, width, d_model, depth, segments, expansion_factor, dropout = 0.)
 
         self.active = nn.LayerNorm(d_model)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))  # output size = (1, 1)
