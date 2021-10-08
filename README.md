@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2 in Jittor.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, ConvMixer in Jittor.
 
 
 
@@ -25,7 +25,9 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
   ![](imgs/s2mlpv2.png)
 
+* Jittor and Pytorch implementaion of [ConvMixer: Patches Are All You Need?](https://openreview.net/pdf?id=TVHS5Y4dNvM).
 
+![](imgs/convmixer.png)
 
 
 
@@ -38,6 +40,8 @@ from models_jittor import gMLPForImageClassification as gMLP_jt
 from models_jittor import ResMLPForImageClassification as ResMLP_jt
 from models_jittor import MLPMixerForImageClassification as MLPMixer_jt
 from models_jittor import ViP as ViP_jt
+from models_jittor import S2MLPv2 as S2MLPv2_jt
+from models_jittor import ConvMixer as ConvMixer_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -60,6 +64,8 @@ from models_pytorch import gMLPForImageClassification as gMLP_pt
 from models_pytorch import ResMLPForImageClassification as ResMLP_pt
 from models_pytorch import MLPMixerForImageClassification as MLPMixer_pt
 from models_pytorch import ViP as ViP_pt
+from models_pytorch import S2MLPv2 as S2MLPv2_pt 
+from models_pytorch import ConvMixer as ConvMixer_pt 
 
 model_pt = ViP_pt(
     image_size=224,

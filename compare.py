@@ -4,6 +4,7 @@ from models_jittor import ResMLPForImageClassification as ResMLP_jt
 from models_jittor import MLPMixerForImageClassification as MLPMixer_jt
 from models_jittor import ViP as ViP_jt
 from models_jittor import S2MLPv2 as S2MLPv2_jt
+from models_jittor import ConvMixer as ConvMixer_jt
 
 import torch
 from models_pytorch import gMLPForImageClassification as gMLP_pt
@@ -11,6 +12,7 @@ from models_pytorch import ResMLPForImageClassification as ResMLP_pt
 from models_pytorch import MLPMixerForImageClassification as MLPMixer_pt
 from models_pytorch import ViP as ViP_pt
 from models_pytorch import S2MLPv2 as S2MLPv2_pt 
+from models_pytorch import ConvMixer as ConvMixer_pt 
 import time
 
 
@@ -27,7 +29,7 @@ jittor_test_img = jt.array(test_img)
 # 跑turns次前向求平均值
 turns = 100
 
-model_name = "MLPMixer"
+model_name = "ConvMixer"
 
 # 定义 pytorch & jittor 的xxx模型，如vgg
 if model_name == "MLPMixer":
@@ -105,6 +107,15 @@ elif model_name == "ViP":
         depth=30,
         segments = 16,
         weighted = True
+    )
+elif model_name == 'ConvMixer':
+    pytorch_model = ConvMixer_pt(
+        dim = 1568,
+        depth = 20
+    ).cuda()
+    jittor_model = ConvMixer_jt(
+        dim = 1568,
+        depth = 20
     )
 else:
     pytorch_model = S2MLPv2_pt(
