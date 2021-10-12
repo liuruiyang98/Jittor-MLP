@@ -4,3 +4,4 @@ from .mlp_mixer import MLPMixerForImageClassification
 from .vip import ViP
 from .s2_mlp_v2 import S2MLPv2
 from .conv_mixer import ConvMixer
+from .conv_mlp import convmlp_s, convmlp_l, convmlp_m

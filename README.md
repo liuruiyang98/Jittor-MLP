@@ -29,6 +29,10 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 ![](imgs/convmixer.png)
 
+* Jittor and Pytorch implementaion of [ConvMLP: Hierarchical Convolutional MLPs for Vision](https://arxiv.org/abs/2109.04454).
+
+![](imgs/convmlp.png)
+
 
 
 
@@ -42,6 +46,9 @@ from models_jittor import MLPMixerForImageClassification as MLPMixer_jt
 from models_jittor import ViP as ViP_jt
 from models_jittor import S2MLPv2 as S2MLPv2_jt
 from models_jittor import ConvMixer as ConvMixer_jt
+from models_jittor import convmlp_s as ConvMLP_s_jt 
+from models_jittor import convmlp_l as ConvMLP_l_jt 
+from models_jittor import convmlp_m as ConvMLP_m_jt 
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -66,6 +73,9 @@ from models_pytorch import MLPMixerForImageClassification as MLPMixer_pt
 from models_pytorch import ViP as ViP_pt
 from models_pytorch import S2MLPv2 as S2MLPv2_pt 
 from models_pytorch import ConvMixer as ConvMixer_pt 
+from models_pytorch import convmlp_s as ConvMLP_s_pt 
+from models_pytorch import convmlp_l as ConvMLP_l_pt 
+from models_pytorch import convmlp_m as ConvMLP_m_pt 
 
 model_pt = ViP_pt(
     image_size=224,
@@ -163,6 +173,15 @@ model_pt = S2MLPv2_pt(
   title={S $\^{} 2$-MLPv2: Improved Spatial-Shift MLP Architecture for Vision},
   author={Yu, Tan and Li, Xu and Cai, Yunfeng and Sun, Mingming and Li, Ping},
   journal={arXiv preprint arXiv:2108.01072},
+  year={2021}
+}
+```
+
+```bibtex
+@article{li2021convmlp,
+  title={ConvMLP: Hierarchical Convolutional MLPs for Vision},
+  author={Li, Jiachen and Hassani, Ali and Walton, Steven and Shi, Humphrey},
+  journal={arXiv preprint arXiv:2109.04454},
   year={2021}
 }
 ```
