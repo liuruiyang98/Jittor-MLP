@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, ConvMixer in Jittor.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, ConvMLP, ConvMixer in Jittor.
 
 
 
