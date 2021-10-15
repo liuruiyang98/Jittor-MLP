@@ -1,7 +1,21 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, ConvMLP, ConvMixer in Jittor.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, ConvMLP, ConvMixer in Jittor and PyTorch.
 
 
+
+### What's New
+
+---
+
+**Rearrange, Reduce** in [einops](https://github.com/arogozhnikov/einops) for Jittor is support ! Easier to convert Transformer-based and MLP-based models from PyTorch to Jittor!
+
+* from .einops\_my.layers.jittor import Rearrange, Reduce (shown in ./models\_jittor/raft\_mlp.py)
+
+
+
+### Models
+
+---
 
 * Jittor and Pytorch implementaion of [MLP-Mixer: An all-MLP Architecture for Vision](https://arxiv.org/pdf/2105.01601.pdf).
 
@@ -33,6 +47,11 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 ![](imgs/convmlp.png)
 
+* Jittor and Pytorch implementaion of [RaftMLP: Do MLP-based Models Dream of Winning Over Computer Vision?](https://arxiv.org/abs/2108.04384).
+
+![](imgs/raftmlp.png)
+
+
 
 
 
@@ -49,6 +68,7 @@ from models_jittor import ConvMixer as ConvMixer_jt
 from models_jittor import convmlp_s as ConvMLP_s_jt 
 from models_jittor import convmlp_l as ConvMLP_l_jt 
 from models_jittor import convmlp_m as ConvMLP_m_jt 
+from models_jittor import RaftMLP as RaftMLP_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -76,6 +96,7 @@ from models_pytorch import ConvMixer as ConvMixer_pt
 from models_pytorch import convmlp_s as ConvMLP_s_pt 
 from models_pytorch import convmlp_l as ConvMLP_l_pt 
 from models_pytorch import convmlp_m as ConvMLP_m_pt 
+from models_pytorch import RaftMLP as RaftMLP_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -122,6 +143,21 @@ model_pt = S2MLPv2_pt(
     num_classes = 1000, 
     expansion_factor = [3, 3]
 )
+
+############################## ConvMLP With Pretrain Params #########################
+model_jt = ConvMLP_s_jt(pretrained = True, num_classes = 1000)
+
+
+############################## RaftMLP #########################
+model_jt = RaftMLP_jt(
+        layers = [
+            {"depth": 12,
+            "dim": 768,
+            "patch_size": 16,
+            "raft_size": 4}
+        ],
+        gap = True
+    )
 ```
 
 
@@ -182,6 +218,15 @@ model_pt = S2MLPv2_pt(
   title={ConvMLP: Hierarchical Convolutional MLPs for Vision},
   author={Li, Jiachen and Hassani, Ali and Walton, Steven and Shi, Humphrey},
   journal={arXiv preprint arXiv:2109.04454},
+  year={2021}
+}
+```
+
+```bibtex
+@article{tatsunami2021raftmlp,
+  title={RaftMLP: Do MLP-based Models Dream of Winning Over Computer Vision?},
+  author={Tatsunami, Yuki and Taki, Masato},
+  journal={arXiv preprint arXiv:2108.04384},
   year={2021}
 }
 ```
