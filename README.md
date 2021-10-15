@@ -3,9 +3,7 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 
 
-### What's New
-
----
+## What's New
 
 **Rearrange, Reduce** in [einops](https://github.com/arogozhnikov/einops) for Jittor is support ! Easier to convert Transformer-based and MLP-based models from PyTorch to Jittor!
 
@@ -13,9 +11,7 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 
 
-### Models
-
----
+## Models
 
 * Jittor and Pytorch implementaion of [MLP-Mixer: An all-MLP Architecture for Vision](https://arxiv.org/pdf/2105.01601.pdf).
 
