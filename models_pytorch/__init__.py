@@ -6,3 +6,4 @@ from .s2_mlp_v2 import S2MLPv2
 from .conv_mixer import ConvMixer, ConvMixerV2
 from .conv_mlp import convmlp_s, convmlp_l, convmlp_m
 from .raft_mlp import RaftMLP
+from .sparse_mlp import SparseMLP

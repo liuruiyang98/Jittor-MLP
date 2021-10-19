@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, ConvMLP, ConvMixer in Jittor and PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, ConvMLP, SparseMLP, ConvMixer in Jittor and PyTorch.
 
 
 
@@ -7,7 +7,7 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 **Rearrange, Reduce** in [einops](https://github.com/arogozhnikov/einops) for Jittor is support ! Easier to convert Transformer-based and MLP-based models from PyTorch to Jittor!
 
-* from .einops\_my.layers.jittor import Rearrange, Reduce (shown in ./models\_jittor/raft\_mlp.py)
+* from .einops\_my.layers.jittor import Rearrange, Reduce (shown in ./models\_jittor/raft\_mlp.py, ./models\_jittor/sparse\_mlp.py)
 
 
 
@@ -47,6 +47,15 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 ![](imgs/raftmlp.png)
 
+* Jittor and Pytorch implementaion of [Sparse MLP for Image Recognition: Is Self-Attention Really Necessary?](https://arxiv.org/abs/2109.05422).
+
+  From Pytorch to Jittor only need **two step**:
+
+  * modify `forward` to `execute` 
+  * modify `torch.cat` to `jt.concat`
+
+![](imgs/sparsemlp.png)
+
 
 
 
@@ -65,6 +74,7 @@ from models_jittor import convmlp_s as ConvMLP_s_jt
 from models_jittor import convmlp_l as ConvMLP_l_jt 
 from models_jittor import convmlp_m as ConvMLP_m_jt 
 from models_jittor import RaftMLP as RaftMLP_jt
+from models_jittor import SparseMLP as SparseMLP_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -93,6 +103,7 @@ from models_pytorch import convmlp_s as ConvMLP_s_pt
 from models_pytorch import convmlp_l as ConvMLP_l_pt 
 from models_pytorch import convmlp_m as ConvMLP_m_pt 
 from models_pytorch import RaftMLP as RaftMLP_pt
+from models_pytorch import SparseMLP as SparseMLP_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -153,6 +164,18 @@ model_jt = RaftMLP_jt(
             "raft_size": 4}
         ],
         gap = True
+    )
+
+############################## SparseMLP #########################
+model_pt = SparseMLP_pt(
+        image_size=224,
+        patch_size=4,
+        in_channels=3,
+        num_classes=1000,
+        d_model=96,
+        depth=[2,10,24,2],
+        expansion_factor = 2,
+        patcher_norm= True
     )
 ```
 
@@ -223,6 +246,15 @@ model_jt = RaftMLP_jt(
   title={RaftMLP: Do MLP-based Models Dream of Winning Over Computer Vision?},
   author={Tatsunami, Yuki and Taki, Masato},
   journal={arXiv preprint arXiv:2108.04384},
+  year={2021}
+}
+```
+
+```bibtex
+@article{tang2021sparse,
+  title={Sparse MLP for Image Recognition: Is Self-Attention Really Necessary?},
+  author={Tang, Chuanxin and Zhao, Yucheng and Wang, Guangting and Luo, Chong and Xie, Wenxuan and Zeng, Wenjun},
+  journal={arXiv preprint arXiv:2109.05422},
   year={2021}
 }
 ```
