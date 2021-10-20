@@ -58,10 +58,11 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 * Jittor and Pytorch implementaion of [Hire-MLP: Vision MLP via Hierarchical Rearrangement](https://arxiv.org/abs/2108.13341).
 
-  From Pytorch to Jittor only need **two step**:
+  From Pytorch to Jittor only need **three step**:
 
   * modify `forward` to `execute` 
   * modify `torch.roll` to `jt.roll`
+  * modify `torch.nn.function.pad` to `jt.nn.pad`
 
 ![](imgs/hiremlp.png)
 
