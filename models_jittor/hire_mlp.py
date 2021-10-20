@@ -103,10 +103,10 @@ class HireMLPBlock(nn.Module):
         self.cross_region = (cross_region_id % cross_region_interval == 0)
 
         if self.cross_region:
-            self.cross_regionW = CrossRegion(step = cross_region_step, dim = 2)
-            self.cross_regionH = CrossRegion(step = cross_region_step, dim = 1)
-            self.cross_region_restoreW = CrossRegion(step = -cross_region_step, dim = 2)
-            self.cross_region_restoreH = CrossRegion(step = -cross_region_step, dim = 1)
+            self.cross_regionW = CrossRegion(step = cross_region_step, dim = 3)
+            self.cross_regionH = CrossRegion(step = cross_region_step, dim = 2)
+            self.cross_region_restoreW = CrossRegion(step = -cross_region_step, dim = 3)
+            self.cross_region_restoreH = CrossRegion(step = -cross_region_step, dim = 2)
         else:
             self.cross_regionW = nn.Identity()
             self.cross_regionH = nn.Identity()
