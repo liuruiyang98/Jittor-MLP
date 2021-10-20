@@ -201,6 +201,7 @@ model_pt = HireMLP_pt(
         depth=[4,6,24,3],
         expansion_factor = 2,
         patcher_norm = True,
+    	padding_type = 'circular',
     )
 ```
 

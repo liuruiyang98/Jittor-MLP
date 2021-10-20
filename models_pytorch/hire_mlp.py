@@ -95,8 +95,13 @@ class InnerRegionRestoreH(nn.Module):
         return self.region(x)
 
 class HireMLPBlock(nn.Module):
-    def __init__(self, h, w, d_model, cross_region_step = 1, cross_region_id = 0, cross_region_interval = 2):
+    def __init__(self, h, w, d_model, cross_region_step = 1, cross_region_id = 0, cross_region_interval = 2, padding_type = 'circular'):
         super().__init__()
+
+        assert (padding_type in ['constant', 'reflect', 'replicate', 'circular'])
+        self.padding_type = padding_type
+        self.w = w
+        self.h = h
 
         # cross region every cross_region_interval HireMLPBlock
         self.cross_region = (cross_region_id % cross_region_interval == 0)
@@ -105,7 +110,7 @@ class HireMLPBlock(nn.Module):
             self.cross_regionW = CrossRegion(step = cross_region_step, dim = 3)
             self.cross_regionH = CrossRegion(step = cross_region_step, dim = 2)
             self.cross_region_restoreW = CrossRegion(step = -cross_region_step, dim = 3)
-            self.cross_region_restoreH = CrossRegion(step = -cross_region_step, dim = 2)
+            self.cross_region_restoreH = CrossRegion(step = -cross_region_step, dim = 3)
         else:
             self.cross_regionW = nn.Identity()
             self.cross_regionH = nn.Identity()
@@ -124,6 +129,12 @@ class HireMLPBlock(nn.Module):
     
     def forward(self, x):
         x = x.permute(0, 3, 1, 2)
+
+        B, C, H, W = x.shape
+        padding_num_w = W % self.w
+        padding_num_h = H % self.h
+        x = nn.functional.pad(x, (0, self.w - padding_num_w, 0, self.h - padding_num_h), self.padding_type)
+
         x_h = self.inner_regionH(self.cross_regionH(x))
         x_w = self.inner_regionW(self.cross_regionW(x))
         
@@ -135,11 +146,13 @@ class HireMLPBlock(nn.Module):
         x_w = self.cross_region_restoreW(self.inner_region_restoreW(x_w))
 
         out = x_c + x_h + x_w
+
+        out = out[:,:,0:H,0:W]
         out = out.permute(0, 2, 3, 1)
         return out
 
 class HireMLPStage(nn.Module):
-    def __init__(self, h, w, d_model_in, d_model_out, depth, cross_region_step, cross_region_interval, expansion_factor = 2, dropout = 0., pooling = False):
+    def __init__(self, h, w, d_model_in, d_model_out, depth, cross_region_step, cross_region_interval, expansion_factor = 2, dropout = 0., pooling = False, padding_type = 'circular'):
         super().__init__()
 
         self.pooling = pooling
@@ -153,7 +166,7 @@ class HireMLPStage(nn.Module):
             *[nn.Sequential(
                 PreNormResidual(d_model_in, nn.Sequential(
                     HireMLPBlock(
-                        h, w, d_model_in, cross_region_step = cross_region_step, cross_region_id = i_depth + 1, cross_region_interval = cross_region_interval
+                        h, w, d_model_in, cross_region_step = cross_region_step, cross_region_id = i_depth + 1, cross_region_interval = cross_region_interval, padding_type = padding_type
                     )
                 ), norm = nn.LayerNorm),
                 PreNormResidual(d_model_in, nn.Sequential(
@@ -179,13 +192,14 @@ class HireMLP(nn.Module):
         in_channels=3,
         num_classes=1000,
         d_model=[64, 128, 320, 512],
-        h = [4,2,2,1],
-        w = [4,2,2,1],
+        h = [4,3,3,2],
+        w = [4,3,3,2],
         cross_region_step = [2,2,1,1],
         cross_region_interval = 2,
         depth=[4,6,24,3],
         expansion_factor = 2,
         patcher_norm = False,
+        padding_type = 'circular',
     ):
         patch_size = pair(patch_size)
         super().__init__()
@@ -197,7 +211,7 @@ class HireMLP(nn.Module):
             i_depth = depth[i_layer]
             i_stage = HireMLPStage(h[i_layer], w[i_layer], d_model[i_layer], d_model_out = d_model[i_layer + 1] if (i_layer + 1 < len(depth)) else d_model[-1],
                 depth = i_depth, cross_region_step = cross_region_step[i_layer], cross_region_interval = cross_region_interval,
-                expansion_factor = expansion_factor, pooling = ((i_layer + 1) < len(depth)))
+                expansion_factor = expansion_factor, pooling = ((i_layer + 1) < len(depth)), padding_type = padding_type)
             self.layers.append(i_stage)
 
         self.mlp_head = nn.Sequential(
