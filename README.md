@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, ConvMLP, SparseMLP, ConvMixer in Jittor and PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer in Jittor and PyTorch.
 
 
 
@@ -56,7 +56,14 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 ![](imgs/sparsemlp.png)
 
+* Jittor and Pytorch implementaion of [Hire-MLP: Vision MLP via Hierarchical Rearrangement](https://arxiv.org/abs/2108.13341).
 
+  From Pytorch to Jittor only need **two step**:
+
+  * modify `forward` to `execute` 
+  * modify `torch.roll` to `jt.roll`
+
+![](imgs/hiremlp.png)
 
 
 
@@ -75,6 +82,7 @@ from models_jittor import convmlp_l as ConvMLP_l_jt
 from models_jittor import convmlp_m as ConvMLP_m_jt 
 from models_jittor import RaftMLP as RaftMLP_jt
 from models_jittor import SparseMLP as SparseMLP_jt
+from models_jittor import HireMLP as HireMLP_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -104,6 +112,7 @@ from models_pytorch import convmlp_l as ConvMLP_l_pt
 from models_pytorch import convmlp_m as ConvMLP_m_pt 
 from models_pytorch import RaftMLP as RaftMLP_pt
 from models_pytorch import SparseMLP as SparseMLP_pt
+from models_pytorch import HireMLP as HireMLP_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -176,6 +185,22 @@ model_pt = SparseMLP_pt(
         depth=[2,10,24,2],
         expansion_factor = 2,
         patcher_norm= True
+    )
+
+############################## HireMLP #########################
+
+model_pt = HireMLP_pt(
+        patch_size=4,
+        in_channels=3,
+        num_classes=1000,
+        d_model=[64, 128, 320, 512],
+        h = [4,2,2,1],
+        w = [4,2,2,1],
+        cross_region_step = [2,2,1,1],
+        cross_region_interval = 2,
+        depth=[4,6,24,3],
+        expansion_factor = 2,
+        patcher_norm = True,
     )
 ```
 
@@ -255,6 +280,15 @@ model_pt = SparseMLP_pt(
   title={Sparse MLP for Image Recognition: Is Self-Attention Really Necessary?},
   author={Tang, Chuanxin and Zhao, Yucheng and Wang, Guangting and Luo, Chong and Xie, Wenxuan and Zeng, Wenjun},
   journal={arXiv preprint arXiv:2109.05422},
+  year={2021}
+}
+```
+
+```bibtex
+@article{guo2021hire,
+  title={Hire-MLP: Vision MLP via Hierarchical Rearrangement},
+  author={Guo, Jianyuan and Tang, Yehui and Han, Kai and Chen, Xinghao and Wu, Han and Xu, Chao and Xu, Chang and Wang, Yunhe},
+  journal={arXiv preprint arXiv:2108.13341},
   year={2021}
 }
 ```

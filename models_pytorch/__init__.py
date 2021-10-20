@@ -7,3 +7,4 @@ from .conv_mixer import ConvMixer, ConvMixerV2
 from .conv_mlp import convmlp_s, convmlp_l, convmlp_m
 from .raft_mlp import RaftMLP
 from .sparse_mlp import SparseMLP
+from .hire_mlp import HireMLP
