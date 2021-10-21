@@ -128,6 +128,8 @@ from models_pytorch import convmlp_m as ConvMLP_m_pt
 from models_pytorch import RaftMLP as RaftMLP_pt
 from models_pytorch import SparseMLP as SparseMLP_pt
 from models_pytorch import HireMLP as HireMLP_pt
+from models_pytorch import GFNet as GFNet_pt
+from models_pytorch import CycleMLP_B2 as CycleMLP_B2_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -218,6 +220,14 @@ model_pt = HireMLP_pt(
         patcher_norm = True,
     	padding_type = 'circular',
     )
+
+############################## GFNet #########################
+model_pt = GFNet_pt()
+
+
+############################## CycleMLP #########################
+model_pt = CycleMLP_B2_pt()
+
 ```
 
 
@@ -314,6 +324,15 @@ model_pt = HireMLP_pt(
   title={Global filter networks for image classification},
   author={Rao, Yongming and Zhao, Wenliang and Zhu, Zheng and Lu, Jiwen and Zhou, Jie},
   journal={arXiv preprint arXiv:2107.00645},
+  year={2021}
+}
+```
+
+```bibtex
+@article{chen2021cyclemlp,
+  title={Cyclemlp: A mlp-like architecture for dense prediction},
+  author={Chen, Shoufa and Xie, Enze and Ge, Chongjian and Liang, Ding and Luo, Ping},
+  journal={arXiv preprint arXiv:2107.10224},
   year={2021}
 }
 ```
