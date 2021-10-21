@@ -8,3 +8,5 @@ from .conv_mlp import convmlp_s, convmlp_l, convmlp_m
 from .raft_mlp import RaftMLP
 from .sparse_mlp import SparseMLP
 from .hire_mlp import HireMLP
+from .gfnet import GFNet
+from .cycle_mlp import CycleMLP_B1, CycleMLP_B2, CycleMLP_B3, CycleMLP_B4, CycleMLP_B5

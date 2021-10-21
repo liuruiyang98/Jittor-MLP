@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer in Jittor and PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
 
 
 
@@ -65,6 +65,20 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
   * modify `torch.nn.function.pad` to `jt.nn.pad`
 
 ![](imgs/hiremlp.png)
+
+* Pytorch implementaion of [Global filter networks for image classification](https://arxiv.org/abs/2107.00645).
+
+  **There is no fft operation in Jittor**!
+
+![](imgs/gfnet.png)
+
+* Pytorch implementaion of [Cyclemlp: A mlp-like architecture for dense prediction](https://arxiv.org/abs/2107.10224).
+
+  `from torchvision.ops.deform_conv import deform_conv2d as deform_conv2d_tv`
+
+  **But There is no deform\_conv in Jittor**! 
+
+![](imgs/cyclemlp.png)
 
 
 
@@ -291,6 +305,15 @@ model_pt = HireMLP_pt(
   title={Hire-MLP: Vision MLP via Hierarchical Rearrangement},
   author={Guo, Jianyuan and Tang, Yehui and Han, Kai and Chen, Xinghao and Wu, Han and Xu, Chao and Xu, Chang and Wang, Yunhe},
   journal={arXiv preprint arXiv:2108.13341},
+  year={2021}
+}
+```
+
+```bibtex
+@article{rao2021global,
+  title={Global filter networks for image classification},
+  author={Rao, Yongming and Zhao, Wenliang and Zhu, Zheng and Lu, Jiwen and Zhou, Jie},
+  journal={arXiv preprint arXiv:2107.00645},
   year={2021}
 }
 ```
