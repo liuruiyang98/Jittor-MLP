@@ -1,9 +1,45 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.utils.checkpoint as checkpoint
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
-from .utils import Shift
+# from timm.models.layers import trunc_normal_
+
+
+import jittor as jt
+from jittor import nn 
+from jittor import Module
+from jittor import init
+from .utils import pair
+############################################## Drop Path ##############################################
+def drop_path(x, drop_prob: float = 0., training: bool = False):
+    """
+    Obtained from: github.com:rwightman/pytorch-image-models
+    Drop paths (Stochastic Depth) per sample (when applied in main path of residual blocks).
+    This is the same as the DropConnect impl I created for EfficientNet, etc networks, however,
+    the original name is misleading as 'Drop Connect' is a different form of dropout in a separate paper...
+    See discussion: https://github.com/tensorflow/tpu/issues/494#issuecomment-532968956 ... I've opted for
+    changing the layer and argument names to 'drop path' rather than mix DropConnect as a layer name and use
+    'survival rate' as the argument.
+    """
+    if drop_prob == 0. or not training:
+        return x
+    keep_prob = 1 - drop_prob
+    shape = (x.shape[0],) + (1,) * (x.ndim - 1)  # work with diff dim tensors, not just 2D ConvNets
+    random_tensor = keep_prob + jt.rand(shape, dtype=x.dtype)
+    random_tensor.floor()  # binarize
+    output = jt.divide(x, keep_prob) * random_tensor
+    return output
+
+
+class DropPath(nn.Module):
+    """
+    Obtained from: github.com:rwightman/pytorch-image-models
+    Drop paths (Stochastic Depth) per sample  (when applied in main path of residual blocks).
+    """
+
+    def __init__(self, drop_prob=None):
+        super(DropPath, self).__init__()
+        self.drop_prob = drop_prob
+
+    def execute(self, x):
+        return drop_path(x, self.drop_prob, self.is_training)
+
 
 class Mlp(nn.Module):
     def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
@@ -15,7 +51,7 @@ class Mlp(nn.Module):
         self.fc2 = nn.Conv2d(hidden_features, out_features, 1, 1)
         self.drop = nn.Dropout(drop)
 
-    def forward(self, x):
+    def execute(self, x):
         x = self.fc1(x)
         x = self.act(x)
         x = self.drop(x)
@@ -23,6 +59,57 @@ class Mlp(nn.Module):
         x = self.drop(x)
         return x
 
+
+'''
+n,c,h,w = 2,10,4,5
+x = jt.random((n,c,h,w))
+
+def shift(x, h_offset, h_stride, h_cycle, w_offset, w_stride, w_cycle):
+    return x.reindex([n,c,h,w], ["i0", "i1", 
+        f"(i1%{h_cycle})*{h_stride}+{h_offset}+i2",
+        f"(i1%{w_cycle})*{w_stride}+{w_offset}+i3"])
+
+# y = shift(x, -1, 1, 3, 0, 0, 1)
+y = shift(x, 0, 0, 1, -1, 1, 3)
+print(x[0,:5])
+print(y[0,:5])
+'''
+
+class Shift(nn.Module):
+    def __init__(self,
+                 kernel_size,
+                 dim):
+        super().__init__()
+        self.kernel_size = kernel_size
+        self.dim = dim
+        assert dim == 2 or dim == 3
+        assert kernel_size % 2 == 1
+
+    def execute(self, x):
+        if self.kernel_size == 1:
+            return x
+
+        out = _shift_cuda(x, self.kernel_size, self.dim)
+        return out
+
+
+def _shift_cuda(x, kernel_size, dim, h_offset = 0, h_stride = 1, h_cycle = 1, w_offset = 0, w_stride = 1, w_cycle = 1):
+    n,c,h,w = x.shape
+
+    assert dim == 2 or dim == 3
+    if dim == 2:
+        h_cycle = kernel_size
+        h_offset = (h_cycle - 1) / 2
+    else:
+        w_cycle = kernel_size
+        w_offset = (w_cycle - 1) / 2
+    
+    return x.reindex([n,c,h,w], ["i0", "i1", 
+        f"(i1%{h_cycle})*{h_stride}+{h_offset}+i2",
+        f"(i1%{w_cycle})*{w_stride}+{w_offset}+i3"])
+
+def MyNorm(dim):
+    return nn.GroupNorm(1, dim)
 
 class AxialShift(nn.Module):
     r""" Axial shift  
@@ -52,7 +139,7 @@ class AxialShift(nn.Module):
         self.shift_dim2 = Shift(self.shift_size, 2)                                                   
         self.shift_dim3 = Shift(self.shift_size, 3)
 
-    def forward(self, x):
+    def execute(self, x):
         """
         Args:
             x: input features with shape of (num_windows*B, N, C)
@@ -64,19 +151,6 @@ class AxialShift(nn.Module):
         x = self.norm1(x)
         x = self.actn(x)
        
-        '''
-        x = F.pad(x, (self.pad, self.pad, self.pad, self.pad) , "constant", 0)
-        
-        xs = torch.chunk(x, self.shift_size, 1)
-        def shift(dim):
-            x_shift = [ torch.roll(x_c, shift, dim) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
-            x_cat = torch.cat(x_shift, 1)
-            x_cat = torch.narrow(x_cat, 2, self.pad, H)
-            x_cat = torch.narrow(x_cat, 3, self.pad, W)
-            return x_cat
-        x_shift_lr = shift(3)
-        x_shift_td = shift(2)
-        '''
         
         x_shift_lr = self.shift_dim3(x)
         x_shift_td = self.shift_dim2(x)
@@ -146,7 +220,7 @@ class AxialShiftedBlock(nn.Module):
         mlp_hidden_dim = int(dim * mlp_ratio)
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
 
-    def forward(self, x):
+    def execute(self, x):
         B, C, H, W = x.shape
 
         shortcut = x
@@ -194,7 +268,7 @@ class PatchMerging(nn.Module):
         self.reduction = nn.Conv2d(4 * dim, 2 * dim, 1, 1, bias=False)
         self.norm = norm_layer(4 * dim)
 
-    def forward(self, x):
+    def execute(self, x):
         """
         x: B, H*W, C
         """
@@ -208,7 +282,7 @@ class PatchMerging(nn.Module):
         x1 = x[:, :, 1::2, 0::2]  # B C H/2 W/2 
         x2 = x[:, :, 0::2, 1::2]  # B C H/2 W/2 
         x3 = x[:, :, 1::2, 1::2]  # B C H/2 W/2 
-        x = torch.cat([x0, x1, x2, x3], 1)  # B 4*C H/2 W/2 
+        x = jt.concat([x0, x1, x2, x3], 1)  # B 4*C H/2 W/2 
 
         x = self.norm(x)
         x = self.reduction(x)
@@ -271,12 +345,9 @@ class BasicLayer(nn.Module):
         else:
             self.downsample = None
 
-    def forward(self, x):
+    def execute(self, x):
         for blk in self.blocks:
-            if self.use_checkpoint:
-                x = checkpoint.checkpoint(blk, x)
-            else:
-                x = blk(x)
+            x = blk(x)
         if self.downsample is not None:
             x = self.downsample(x)
         return x
@@ -305,8 +376,8 @@ class PatchEmbed(nn.Module):
 
     def __init__(self, img_size=224, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None):
         super().__init__()
-        img_size = to_2tuple(img_size)
-        patch_size = to_2tuple(patch_size)
+        img_size = pair(img_size)
+        patch_size = pair(patch_size)
         patches_resolution = [img_size[0] // patch_size[0], img_size[1] // patch_size[1]]
         self.img_size = img_size
         self.patch_size = patch_size
@@ -322,7 +393,7 @@ class PatchEmbed(nn.Module):
         else:
             self.norm = None
 
-    def forward(self, x):
+    def execute(self, x):
         B, C, H, W = x.shape
         # FIXME look at relaxing size constraints
         assert H == self.img_size[0] and W == self.img_size[1], \
@@ -338,10 +409,6 @@ class PatchEmbed(nn.Module):
         if self.norm is not None:
             flops += Ho * Wo * self.embed_dim
         return flops
-
-
-def MyNorm(dim):
-    return nn.GroupNorm(1, dim)
 
 
 class AS_MLP(nn.Module):
@@ -391,7 +458,7 @@ class AS_MLP(nn.Module):
         self.pos_drop = nn.Dropout(p=drop_rate)
 
         # stochastic depth
-        dpr = [x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))]  # stochastic depth decay rule
+        dpr = [x.item() for x in jt.linspace(0, drop_path_rate, sum(depths))]  # stochastic depth decay rule
 
         # build layers
         self.layers = nn.ModuleList()
@@ -414,16 +481,16 @@ class AS_MLP(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.head = nn.Linear(self.num_features, num_classes) if num_classes > 0 else nn.Identity()
 
-        self.apply(self._init_weights)
+        # self.apply(self._init_weights)
 
-    def _init_weights(self, m):
-        if isinstance(m, nn.Linear):
-            trunc_normal_(m.weight, std=.02)
-            if isinstance(m, nn.Linear) and m.bias is not None:
-                nn.init.constant_(m.bias, 0)
-        elif isinstance(m, nn.LayerNorm):
-            nn.init.constant_(m.bias, 0)
-            nn.init.constant_(m.weight, 1.0)
+    # def _init_weights(self, m):
+    #     if isinstance(m, nn.Linear):
+    #         trunc_normal_(m.weight, std=.02)
+    #         if isinstance(m, nn.Linear) and m.bias is not None:
+    #             nn.init.constant_(m.bias, 0)
+    #     elif isinstance(m, nn.LayerNorm):
+    #         nn.init.constant_(m.bias, 0)
+    #         nn.init.constant_(m.weight, 1.0)
 
     def forward_features(self, x):
         x = self.patch_embed(x)
@@ -434,10 +501,10 @@ class AS_MLP(nn.Module):
 
         x = self.norm(x)  # B C H W
         x = self.avgpool(x)  # B C 1 1
-        x = torch.flatten(x, 1)
+        x = jt.flatten(x, 1)
         return x
 
-    def forward(self, x):
+    def execute(self, x):
         x = self.forward_features(x)
         x = self.head(x)
         return x
@@ -450,3 +517,4 @@ class AS_MLP(nn.Module):
         flops += self.num_features * self.patches_resolution[0] * self.patches_resolution[1] // (2 ** self.num_layers)
         flops += self.num_features * self.num_classes
         return flops
+

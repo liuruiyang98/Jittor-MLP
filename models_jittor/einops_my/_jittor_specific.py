@@ -59,7 +59,7 @@ class JittorJitBackend:
 
     @staticmethod
     def is_float_type(x):
-        return x.dtype in [jt.float16, jt.float32, jt.float64]
+        return x.dtype in ["float16", "float32", "float64"]
 
     @staticmethod
     def shape(x):

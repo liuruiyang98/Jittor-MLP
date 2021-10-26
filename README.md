@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
 
 
 
@@ -76,9 +76,33 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
   `from torchvision.ops.deform_conv import deform_conv2d as deform_conv2d_tv`
 
-  **But There is no deform\_conv in Jittor**! 
+  **But There is no deform\_conv in Jittor**!  -- I find in JDet, but there is still some problems to be solved.
 
 ![](imgs/cyclemlp.png)
+
+* Jittor and Pytorch implementaion of [As-mlp: An axial shifted mlp architecture for vision](https://arxiv.org/abs/2107.08391).
+  * AS-MLP Pytorch, shift is implemented by cupy, and can only run on GPU.
+  * AS-MLP Jittor, **shift can be implemented in two lines** , and can run on both CPU and GPU.
+
+```python
+import jittor as jt
+n,c,h,w = 2,10,4,5
+x = jt.random((n,c,h,w))
+
+def shift(x, h_offset, h_stride, h_cycle, w_offset, w_stride, w_cycle):
+    return x.reindex([n,c,h,w], ["i0", "i1", 
+        f"(i1%{h_cycle})*{h_stride}+{h_offset}+i2",
+        f"(i1%{w_cycle})*{w_stride}+{w_offset}+i3"])
+
+# y = shift(x, -1, 1, 3, 0, 0, 1)
+y = shift(x, 0, 0, 1, -1, 1, 3)
+print(x[0,:5])
+print(y[0,:5])
+```
+
+![](imgs/asmlp.png)
+
+
 
 
 
@@ -98,6 +122,7 @@ from models_jittor import convmlp_m as ConvMLP_m_jt
 from models_jittor import RaftMLP as RaftMLP_jt
 from models_jittor import SparseMLP as SparseMLP_jt
 from models_jittor import HireMLP as HireMLP_jt
+from models_jittor import AS_MLP as AS_MLP_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -130,6 +155,7 @@ from models_pytorch import SparseMLP as SparseMLP_pt
 from models_pytorch import HireMLP as HireMLP_pt
 from models_pytorch import GFNet as GFNet_pt
 from models_pytorch import CycleMLP_B2 as CycleMLP_B2_pt
+from models_pytorch import AS_MLP as AS_MLP_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -227,6 +253,9 @@ model_pt = GFNet_pt()
 
 ############################## CycleMLP #########################
 model_pt = CycleMLP_B2_pt()
+
+############################## AS-MLP #########################
+model_pt = AS_MLP_pt()
 
 ```
 
@@ -333,6 +362,15 @@ model_pt = CycleMLP_B2_pt()
   title={Cyclemlp: A mlp-like architecture for dense prediction},
   author={Chen, Shoufa and Xie, Enze and Ge, Chongjian and Liang, Ding and Luo, Ping},
   journal={arXiv preprint arXiv:2107.10224},
+  year={2021}
+}
+```
+
+```bibtex
+@article{lian2021mlp,
+  title={As-mlp: An axial shifted mlp architecture for vision},
+  author={Lian, Dongze and Yu, Zehao and Sun, Xing and Gao, Shenghua},
+  journal={arXiv preprint arXiv:2107.08391},
   year={2021}
 }
 ```
