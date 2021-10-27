@@ -99,10 +99,10 @@ def _shift_cuda(x, kernel_size, dim, h_offset = 0, h_stride = 1, h_cycle = 1, w_
     assert dim == 2 or dim == 3
     if dim == 2:
         h_cycle = kernel_size
-        h_offset = (h_cycle - 1) / 2
+        h_offset = -(h_cycle - 1) // 2
     else:
         w_cycle = kernel_size
-        w_offset = (w_cycle - 1) / 2
+        w_offset = -(w_cycle - 1) // 2
     
     return x.reindex([n,c,h,w], ["i0", "i1", 
         f"(i1%{h_cycle})*{h_stride}+{h_offset}+i2",
