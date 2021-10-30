@@ -1,4 +1,4 @@
-# from timm.models.layers import trunc_normal_
+from .utils import trunc_normal_
 
 
 import jittor as jt
@@ -99,10 +99,10 @@ def _shift_cuda(x, kernel_size, dim, h_offset = 0, h_stride = 1, h_cycle = 1, w_
     assert dim == 2 or dim == 3
     if dim == 2:
         h_cycle = kernel_size
-        h_offset = -(h_cycle - 1) // 2
+        h_offset = (h_cycle - 1) / 2
     else:
         w_cycle = kernel_size
-        w_offset = -(w_cycle - 1) // 2
+        w_offset = (w_cycle - 1) / 2
     
     return x.reindex([n,c,h,w], ["i0", "i1", 
         f"(i1%{h_cycle})*{h_stride}+{h_offset}+i2",
@@ -481,16 +481,16 @@ class AS_MLP(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.head = nn.Linear(self.num_features, num_classes) if num_classes > 0 else nn.Identity()
 
-        # self.apply(self._init_weights)
+        self.apply(self._init_weights)
 
-    # def _init_weights(self, m):
-    #     if isinstance(m, nn.Linear):
-    #         trunc_normal_(m.weight, std=.02)
-    #         if isinstance(m, nn.Linear) and m.bias is not None:
-    #             nn.init.constant_(m.bias, 0)
-    #     elif isinstance(m, nn.LayerNorm):
-    #         nn.init.constant_(m.bias, 0)
-    #         nn.init.constant_(m.weight, 1.0)
+    def _init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            trunc_normal_(m.weight, std=.02)
+            if isinstance(m, nn.Linear) and m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.constant_(m.bias, 0)
+            nn.init.constant_(m.weight, 1.0)
 
     def forward_features(self, x):
         x = self.patch_embed(x)

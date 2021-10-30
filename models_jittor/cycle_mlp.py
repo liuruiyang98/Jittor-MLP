@@ -1,6 +1,6 @@
 import os
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from timm.models.layers import trunc_normal_
+from .utils import trunc_normal_
 
 
 import math
@@ -354,7 +354,7 @@ class CycleNet(nn.Module):
             # Classifier head
             self.norm = norm_layer(embed_dims[-1])
             self.head = nn.Linear(embed_dims[-1], num_classes) if num_classes > 0 else nn.Identity()
-        # self.apply(self.cls_init_weights)
+        self.apply(self.cls_init_weights)
 
     def cls_init_weights(self, m):
         if isinstance(m, nn.Linear):
