@@ -18,7 +18,7 @@ class ConvMixer(nn.Module):
         super().__init__()
 
         self.embedding = nn.Sequential(
-            nn.Conv2d(3, dim, kernel_size=patch_size, stride=patch_size),
+            nn.Conv2d(3, dim, kernel_size=patch_size, stride=patch_size, padding=patch_size//2),
             nn.GELU(),
             nn.BatchNorm2d(dim)
         )
