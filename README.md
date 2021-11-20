@@ -5,6 +5,21 @@ Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLPv2
 
 ## What's New
 
+**Are we ready for a new paradigm shift? A Survey on Visual Deep MLP** ([paper](https://arxiv.org/abs/2111.04060)).
+
+![](imgs/paper.png)
+
+```bibtex
+@article{liu2021we,
+  title={Are we ready for a new paradigm shift? A Survey on Visual Deep MLP},
+  author={Liu, Ruiyang and Li, Yinghui and Liang, Dun and Tao, Linmi and Hu, Shimin and Zheng, Hai-Tao},
+  journal={arXiv preprint arXiv:2111.04060},
+  year={2021}
+}
+```
+
+
+
 **trunc\_normal\_** is supported for Jittor (Jittor vision  >= 1.3.15)!   (shown in ./models\_jittor/utils/init.py)
 
 ```python
