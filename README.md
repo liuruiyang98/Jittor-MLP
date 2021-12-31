@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
 
 ![](imgs/FLOPs.png)
 
@@ -189,9 +189,9 @@ print(y[0,:5])
 
 ![](imgs/asmlp.png)
 
+* Jittor and Pytorch implementaion of [RepMLPNet: Hierarchical Vision MLP with Re-parameterized Locality](https://arxiv.org/abs/2112.11081).
 
-
-
+![](imgs/repmlpnet.png)
 
 ## Usage
 
@@ -211,6 +211,7 @@ from models_jittor import RaftMLP as RaftMLP_jt
 from models_jittor import SparseMLP as SparseMLP_jt
 from models_jittor import HireMLP as HireMLP_jt
 from models_jittor import AS_MLP as AS_MLP_jt
+from models_jittor import SwinMLP as SwinMLP_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -245,6 +246,8 @@ from models_pytorch import HireMLP as HireMLP_pt
 from models_pytorch import GFNet as GFNet_pt
 from models_pytorch import CycleMLP_B2 as CycleMLP_B2_pt
 from models_pytorch import AS_MLP as AS_MLP_pt
+from models_pytorch import SwinMLP as SwinMLP_pt
+from models_pytorch import create_RepMLPNet_B224, create_RepMLPNet_B256
 
 model_pt = ViP_pt(
     image_size=224,
@@ -460,6 +463,15 @@ model_pt = AS_MLP_pt()
   title={As-mlp: An axial shifted mlp architecture for vision},
   author={Lian, Dongze and Yu, Zehao and Sun, Xing and Gao, Shenghua},
   journal={arXiv preprint arXiv:2107.08391},
+  year={2021}
+}
+```
+
+```bibtex
+@article{ding2021repmlpnet,
+  title={RepMLPNet: Hierarchical Vision MLP with Re-parameterized Locality},
+  author={Ding, Xiaohan and Chen, Honghao and Zhang, Xiangyu and Han, Jungong and Ding, Guiguang},
+  journal={arXiv preprint arXiv:2112.11081},
   year={2021}
 }
 ```
