@@ -45,14 +45,14 @@ def _no_grad_trunc_normal_(var, mean, std, a, b):
     # Uniformly fill tensor with values from [l, u], then translate to
     # [2l-1, 2u-1].
     # var.uniform(2 * l - 1, 2 * u - 1)
-    jt.init.uniform_(var, low=2 * l - 1, high=2 * u - 1)
+    var.uniform_(low=2 * l - 1, high=2 * u - 1)
 
     # Use inverse cdf transform for normal distribution to get truncated
     # standard normal
-    var.erfinv()
+    var = var.erfinv()
 
     # Transform to proper mean, std
-    var.multiply(std * math.sqrt(2.))
+    var = var.multiply(std * math.sqrt(2.))
     var.add(mean)
 
     # Clamp to ensure it's in the proper range
