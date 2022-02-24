@@ -14,3 +14,4 @@ from .cycle_mlp import CycleMLP_B1, CycleMLP_B2, CycleMLP_B3, CycleMLP_B4, Cycle
 from .as_mlp import AS_MLP
 from .swin_mlp import SwinMLP
 from .repmlpnet import create_RepMLPNet_B224, create_RepMLPNet_B256
+from .wave_mlp import WaveMLP

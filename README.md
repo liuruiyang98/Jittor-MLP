@@ -193,6 +193,10 @@ print(y[0,:5])
 
 ![](imgs/repmlpnet.png)
 
+* Jittor and Pytorch implementaion of [An image patch is a wave: Phase-aware vision mlp](https://arxiv.org/abs/2111.12294).
+
+![](imgs/wavemlp.png)
+
 ## Usage
 
 ```python
@@ -212,6 +216,7 @@ from models_jittor import SparseMLP as SparseMLP_jt
 from models_jittor import HireMLP as HireMLP_jt
 from models_jittor import AS_MLP as AS_MLP_jt
 from models_jittor import SwinMLP as SwinMLP_jt
+from models_jittor import WaveMLP as WaveMLP_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -248,6 +253,7 @@ from models_pytorch import CycleMLP_B2 as CycleMLP_B2_pt
 from models_pytorch import AS_MLP as AS_MLP_pt
 from models_pytorch import SwinMLP as SwinMLP_pt
 from models_pytorch import create_RepMLPNet_B224, create_RepMLPNet_B256
+from models_pytorch import WaveMLP as WaveMLP_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -349,6 +355,8 @@ model_pt = CycleMLP_B2_pt()
 ############################## AS-MLP #########################
 model_pt = AS_MLP_pt()
 
+############################## WaveMLP #########################
+model_pt = WaveMLP_pt('M')
 ```
 
 
@@ -472,6 +480,15 @@ model_pt = AS_MLP_pt()
   title={RepMLPNet: Hierarchical Vision MLP with Re-parameterized Locality},
   author={Ding, Xiaohan and Chen, Honghao and Zhang, Xiangyu and Han, Jungong and Ding, Guiguang},
   journal={arXiv preprint arXiv:2112.11081},
+  year={2021}
+}
+```
+
+```bibtex
+@article{tang2021image,
+  title={An image patch is a wave: Phase-aware vision mlp},
+  author={Tang, Yehui and Han, Kai and Guo, Jianyuan and Xu, Chang and Li, Yanxi and Xu, Chao and Wang, Yunhe},
+  journal={arXiv preprint arXiv:2111.12294},
   year={2021}
 }
 ```

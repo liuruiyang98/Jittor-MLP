@@ -12,3 +12,4 @@ from .hire_mlp import HireMLP
 from .as_mlp import AS_MLP
 from .swin_mlp import SwinMLP
 from .repmlpnet import create_RepMLPNet_B224, create_RepMLPNet_B256
+from .wave_mlp import WaveMLP
