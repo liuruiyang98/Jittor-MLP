@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet, WaveMLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet, WaveMLP, MS-MLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
 
 ![](imgs/FLOPs.png)
 
@@ -197,6 +197,10 @@ print(y[0,:5])
 
 ![](imgs/wavemlp.png)
 
+* Jittor and Pytorch implementaion of [Mixing and Shifting: Exploiting Global and Local Dependencies in Vision MLPs](https://arxiv.org/abs/2202.06510).
+
+![](imgs/ms_mlp.png)
+
 ## Usage
 
 ```python
@@ -217,6 +221,7 @@ from models_jittor import HireMLP as HireMLP_jt
 from models_jittor import AS_MLP as AS_MLP_jt
 from models_jittor import SwinMLP as SwinMLP_jt
 from models_jittor import WaveMLP as WaveMLP_jt
+from models_jittor import MS_MLP as MS_MLP_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -254,6 +259,7 @@ from models_pytorch import AS_MLP as AS_MLP_pt
 from models_pytorch import SwinMLP as SwinMLP_pt
 from models_pytorch import create_RepMLPNet_B224, create_RepMLPNet_B256
 from models_pytorch import WaveMLP as WaveMLP_pt
+from models_pytorch import MS_MLP as MS_MLP_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -357,6 +363,9 @@ model_pt = AS_MLP_pt()
 
 ############################## WaveMLP #########################
 model_pt = WaveMLP_pt('M')
+
+############################## MS-MLP #########################
+model_pt = MS_MLP_pt()
 ```
 
 
@@ -490,6 +499,15 @@ model_pt = WaveMLP_pt('M')
   author={Tang, Yehui and Han, Kai and Guo, Jianyuan and Xu, Chang and Li, Yanxi and Xu, Chao and Wang, Yunhe},
   journal={arXiv preprint arXiv:2111.12294},
   year={2021}
+}
+```
+
+```bibtex
+@article{zheng2022mixing,
+  title={Mixing and Shifting: Exploiting Global and Local Dependencies in Vision MLPs},
+  author={Zheng, Huangjie and He, Pengcheng and Chen, Weizhu and Zhou, Mingyuan},
+  journal={arXiv preprint arXiv:2202.06510},
+  year={2022}
 }
 ```
 
