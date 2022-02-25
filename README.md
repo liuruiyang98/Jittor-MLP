@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet, WaveMLP, MS-MLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet, WaveMLP, MorphMLP, MS-MLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
 
 ![](imgs/FLOPs.png)
 
@@ -201,6 +201,10 @@ print(y[0,:5])
 
 ![](imgs/ms_mlp.png)
 
+* Jittor and Pytorch implementaion of [MorphMLP: A Self-Attention Free, MLP-Like Backbone for Image and Video](https://arxiv.org/abs/2111.12527).
+
+![](imgs/morph_mlp.png)
+
 ## Usage
 
 ```python
@@ -222,6 +226,7 @@ from models_jittor import AS_MLP as AS_MLP_jt
 from models_jittor import SwinMLP as SwinMLP_jt
 from models_jittor import WaveMLP as WaveMLP_jt
 from models_jittor import MS_MLP as MS_MLP_jt
+from models_jittor import MorphMLP as MorphMLP_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -260,6 +265,7 @@ from models_pytorch import SwinMLP as SwinMLP_pt
 from models_pytorch import create_RepMLPNet_B224, create_RepMLPNet_B256
 from models_pytorch import WaveMLP as WaveMLP_pt
 from models_pytorch import MS_MLP as MS_MLP_pt
+from models_pytorch import MorphMLP as MorphMLP_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -366,6 +372,9 @@ model_pt = WaveMLP_pt('M')
 
 ############################## MS-MLP #########################
 model_pt = MS_MLP_pt()
+
+############################## MorphMLP #########################
+model_pt = MorphMLP_pt('B')
 ```
 
 
@@ -508,6 +517,15 @@ model_pt = MS_MLP_pt()
   author={Zheng, Huangjie and He, Pengcheng and Chen, Weizhu and Zhou, Mingyuan},
   journal={arXiv preprint arXiv:2202.06510},
   year={2022}
+}
+```
+
+```bibtex
+@article{zhang2021morphmlp,
+  title={MorphMLP: A Self-Attention Free, MLP-Like Backbone for Image and Video},
+  author={Zhang, David Junhao and Li, Kunchang and Chen, Yunpeng and Wang, Yali and Chandra, Shashwat and Qiao, Yu and Liu, Luoqi and Shou, Mike Zheng},
+  journal={arXiv preprint arXiv:2111.12527},
+  year={2021}
 }
 ```
 

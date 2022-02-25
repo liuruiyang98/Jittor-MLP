@@ -16,3 +16,4 @@ from .swin_mlp import SwinMLP
 from .repmlpnet import create_RepMLPNet_B224, create_RepMLPNet_B256
 from .wave_mlp import WaveMLP
 from .ms_mlp import MS_MLP
+from .morph_mlp import MorphMLP
