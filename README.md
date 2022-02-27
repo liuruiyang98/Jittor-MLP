@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet, WaveMLP, MorphMLP, MS-MLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet, WaveMLP, MorphMLP, DynaMixer, MS-MLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
 
 ![](imgs/FLOPs.png)
 
@@ -205,6 +205,10 @@ print(y[0,:5])
 
 ![](imgs/morph_mlp.png)
 
+* Jittor and Pytorch implementaion of [DynaMixer: A Vision MLP Architecture with Dynamic Mixing](https://arxiv.org/abs/2201.12083).
+
+![](imgs/dyna_mixer.png)
+
 ## Usage
 
 ```python
@@ -227,6 +231,7 @@ from models_jittor import SwinMLP as SwinMLP_jt
 from models_jittor import WaveMLP as WaveMLP_jt
 from models_jittor import MS_MLP as MS_MLP_jt
 from models_jittor import MorphMLP as MorphMLP_jt
+from models_jittor import DynaMixer as DynaMixer_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -266,6 +271,7 @@ from models_pytorch import create_RepMLPNet_B224, create_RepMLPNet_B256
 from models_pytorch import WaveMLP as WaveMLP_pt
 from models_pytorch import MS_MLP as MS_MLP_pt
 from models_pytorch import MorphMLP as MorphMLP_pt
+from models_pytorch import DynaMixer as DynaMixer_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -375,6 +381,9 @@ model_pt = MS_MLP_pt()
 
 ############################## MorphMLP #########################
 model_pt = MorphMLP_pt('B')
+
+############################## DynaMixer #########################
+model_pt = DynaMixer_pt('M')
 ```
 
 
@@ -526,6 +535,15 @@ model_pt = MorphMLP_pt('B')
   author={Zhang, David Junhao and Li, Kunchang and Chen, Yunpeng and Wang, Yali and Chandra, Shashwat and Qiao, Yu and Liu, Luoqi and Shou, Mike Zheng},
   journal={arXiv preprint arXiv:2111.12527},
   year={2021}
+}
+```
+
+```bibtex
+@article{wang2022dynamixer,
+  title={DynaMixer: A Vision MLP Architecture with Dynamic Mixing},
+  author={Wang, Ziyu and Jiang, Wenhao and Zhu, Yiming and Yuan, Li and Song, Yibing and Liu, Wei},
+  journal={arXiv preprint arXiv:2201.12083},
+  year={2022}
 }
 ```
 

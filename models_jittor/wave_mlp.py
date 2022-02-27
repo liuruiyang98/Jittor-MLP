@@ -190,7 +190,7 @@ class WaveMLP(nn.Module):
                     if m.bias is not None:
                         nn.init.zero_(m.bias)
             elif isinstance(m, nn.LayerNorm):
-                nn.init.ones_(m.weight)
+                nn.init.one_(m.weight)
                 nn.init.zero_(m.bias)
             elif isinstance(m, nn.Conv2d):
                 nn.init.xavier_uniform_(m.weight)
