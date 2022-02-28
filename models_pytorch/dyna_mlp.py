@@ -34,42 +34,64 @@ class FeedForward(nn.Module):
 class DynaMixerOp_w(nn.Module):
     def __init__(self, w, dim, hidden_dim, segment):
         super().__init__()
+        self.segment = segment
+        self.reshape = Rearrange('b h w (s d) -> b h s w d', s = segment)
+
+        self.Wd = nn.ModuleList([nn.Linear(dim, hidden_dim) for i in range(segment)])
         self.attend = nn.Sequential(
-            Rearrange('b h w d -> b d w h'),
-            nn.Conv2d(dim, hidden_dim, 1),
-            Rearrange('b d w h -> b (d w) h'),
-            nn.Conv1d(hidden_dim * w, w * w, 1, groups=segment),
-            Rearrange('b (w1 w2) h -> b h w1 w2', w1 = w),
+            Rearrange('b h w (s d) -> b h s (w d)', s = segment),
+            nn.Linear(int(hidden_dim * w), w * w),
+            Rearrange('b h s (w1 w2) -> b h s w1 w2', w1 = w),
             nn.Softmax(dim = -1),
         )
+        self.recover = Rearrange('b h s w d -> b h w (s d)', s = segment)
+        self.proc = nn.Linear(dim, dim)
 
     def forward(self, x):
         # b h w d = X.shape
-        attn = self.attend(x)
-        x = torch.matmul(attn, x)
-        return x
+        input = x
+
+        x_ = []
+        for i in range(self.segment):
+            x_.append(self.Wd[i](x))
+        x_ = torch.cat(x_, -1)
+        attn = self.attend(x_)
+
+        input = self.reshape(input)
+        x = torch.matmul(attn, input)
+        x = self.recover(x)
+        return self.proc(x)
 
 class DynaMixerOp_h(nn.Module):
     def __init__(self, h, dim, hidden_dim, segment):
         super().__init__()
-        self.reshape = Rearrange('b h w d -> b w h d')
+        self.segment = segment
+        self.reshape = Rearrange('b h w (s d) -> b w s h d', s = segment)
+
+        self.Wd = nn.ModuleList([nn.Linear(dim, hidden_dim) for i in range(segment)])
         self.attend = nn.Sequential(
-            Rearrange('b h w d -> b d h w'),
-            nn.Conv2d(dim, hidden_dim, 1),
-            Rearrange('b d h w -> b (d h) w'),
-            nn.Conv1d(hidden_dim * h, h * h, 1, groups=segment),
-            Rearrange('b (h1 h2) w -> b w h1 h2', h1 = h),
+            Rearrange('b h w (s d) -> b w s (h d)', s = segment),
+            nn.Linear(int(hidden_dim * h), h * h),
+            Rearrange('b w s (h1 h2) -> b w s h1 h2', h1 = h),
             nn.Softmax(dim = -1),
         )
-        self.recover = Rearrange('b w h d -> b h w d')
+        self.recover = Rearrange('b w s h d -> b h w (s d)', s = segment)
+        self.proc = nn.Linear(dim, dim)
 
     def forward(self, x):
         # b h w d = X.shape
-        attn = self.attend(x)
-        x = self.reshape(x)
-        x = torch.matmul(attn, x)
+        input = x
+
+        x_ = []
+        for i in range(self.segment):
+            x_.append(self.Wd[i](x))
+        x_ = torch.cat(x_, -1)
+        attn = self.attend(x_)
+
+        input = self.reshape(input)
+        x = torch.matmul(attn, input)
         x = self.recover(x)
-        return x
+        return self.proc(x)
 
 class DynaBlock(nn.Module):
     def __init__(self, h, w, dim, hidden_dim_DMO = 2, segment = 8):
