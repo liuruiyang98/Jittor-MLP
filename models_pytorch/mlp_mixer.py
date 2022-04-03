@@ -53,7 +53,7 @@ class MLPMixerForImageClassification(MLPMixer):
         depth = 12, 
         expansion_factor = 4):
         num_patches = check_sizes(image_size, patch_size)
-        super().__init__(num_patches, d_model, expansion_factor, depth)
+        super().__init__(num_patches, d_model, depth, expansion_factor)
 
         self.patcher = nn.Sequential(
             nn.Conv2d(in_channels, d_model, kernel_size=patch_size, stride=patch_size),
