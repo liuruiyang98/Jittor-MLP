@@ -18,3 +18,4 @@ from .wave_mlp import WaveMLP
 from .ms_mlp import MS_MLP
 from .morph_mlp import MorphMLP
 from .dyna_mlp import DynaMixer
+from .active_mlp import ActiveSmall, ActiveBase, ActiveLarge
