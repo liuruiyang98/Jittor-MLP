@@ -72,7 +72,7 @@ class Sequencer2DBlock(nn.Module):
         return x
 
 class Sequencer2D(nn.Module):
-    def __init__(self, model_name: str = 'T', pretrained: str = None, num_classes: int = 1000, in_channels = 3, *args, **kwargs) -> None:
+    def __init__(self, model_name: str = 'M', pretrained: str = None, num_classes: int = 1000, in_channels = 3, *args, **kwargs) -> None:
         super().__init__()
         assert model_name in sequencer_settings.keys(), f"Sequencer model name should be in {list(sequencer_settings.keys())}"
         depth, embed_dims, hidden_dims, expansion_factor = sequencer_settings[model_name]
