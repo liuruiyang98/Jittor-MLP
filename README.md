@@ -1,5 +1,5 @@
 # Jittor-MLP
-Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet, WaveMLP, MorphMLP, DynaMixer, MS-MLP in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
+Unofficial Implementation of MLP-Mixer, gMLP, resMLP, Vision Permutator, S2MLP, S2MLPv2, RaftMLP, HireMLP, ConvMLP, SparseMLP, ConvMixer, AS-MLP, SwinMLP, RepMLPNet, WaveMLP, MorphMLP, DynaMixer, MS-MLP, Sequencer2D in Jittor and PyTorch. GFNet and CycleMLP in PyTorch.
 
 ![](imgs/FLOPs.png)
 
@@ -208,6 +208,10 @@ print(y[0,:5])
 
 ![](imgs/dyna_mixer.png)
 
+* Jittor and Pytorch implementaion of [Sequencer: Deep LSTM for Image Classification](https://arxiv.org/abs/2205.01972).
+
+![](imgs/sequencer2D.png)
+
 ## Usage
 
 ```python
@@ -231,6 +235,7 @@ from models_jittor import WaveMLP as WaveMLP_jt
 from models_jittor import MS_MLP as MS_MLP_jt
 from models_jittor import MorphMLP as MorphMLP_jt
 from models_jittor import DynaMixer as DynaMixer_jt
+from models_jittor import Sequencer2D as Sequencer2D_jt
 
 model_jt = MLPMixer_jt(
     image_size=(224,112),
@@ -271,6 +276,7 @@ from models_pytorch import WaveMLP as WaveMLP_pt
 from models_pytorch import MS_MLP as MS_MLP_pt
 from models_pytorch import MorphMLP as MorphMLP_pt
 from models_pytorch import DynaMixer as DynaMixer_pt
+from models_pytorch import Sequencer2D as Sequencer2D_pt
 
 model_pt = ViP_pt(
     image_size=224,
@@ -383,6 +389,9 @@ model_pt = MorphMLP_pt('B')
 
 ############################## DynaMixer #########################
 model_pt = DynaMixer_pt('M')
+
+############################## Sequencer2D #########################
+model_pt = Sequencer2D_pt('M')
 ```
 
 
@@ -545,4 +554,6 @@ model_pt = DynaMixer_pt('M')
   year={2022}
 }
 ```
+
+
 
