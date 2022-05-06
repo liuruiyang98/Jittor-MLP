@@ -209,6 +209,8 @@ print(y[0,:5])
 ![](imgs/dyna_mixer.png)
 
 * Jittor and Pytorch implementaion of [Sequencer: Deep LSTM for Image Classification](https://arxiv.org/abs/2205.01972).
+  * Official implementation version: https://github.com/okojoalg/sequencer
+
 
 ![](imgs/sequencer2D.png)
 
