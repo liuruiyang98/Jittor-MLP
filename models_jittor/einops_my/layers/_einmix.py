@@ -1,7 +1,7 @@
 from typing import Optional, Dict
 
-from ..einops import EinopsError
-from ...einops_my.parsing import ParsedExpression
+from einops import EinopsError
+from einops.parsing import ParsedExpression
 import warnings
 import string
 from ..einops import _product

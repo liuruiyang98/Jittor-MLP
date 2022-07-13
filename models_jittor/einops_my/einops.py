@@ -1,13 +1,18 @@
 import functools
 import itertools
+import typing
 from collections import OrderedDict
-from typing import Tuple, List, Dict, Union, Callable, Optional
+from typing import Tuple, List, Dict, Union, Callable, Optional, TypeVar
+
+if typing.TYPE_CHECKING:
+    import numpy as np
 
 from . import EinopsError
 from ._backends import get_backend
 from .parsing import ParsedExpression, _ellipsis, AnonymousAxis
 
-ReductionCallable = Callable[['tensor', List[int]], 'tensor']
+Tensor = TypeVar('Tensor')
+ReductionCallable = Callable[[Tensor, List[int]], Tensor]
 Reduction = Union[str, ReductionCallable]
 
 _reductions = ('min', 'max', 'sum', 'mean', 'prod')
@@ -46,6 +51,7 @@ def _reduce_axes(tensor, reduction_type: Reduction, reduced_axes: List[int], bac
 
 
 def _optimize_transformation(init_shapes, reduced_axes, axes_reordering, final_shapes):
+    # 'collapses' neighboring axes if those participate in the result pattern in the same order
     # TODO add support for added_axes
     assert len(axes_reordering) + len(reduced_axes) == len(init_shapes)
     # joining consecutive axes that will be reduced
@@ -220,7 +226,7 @@ def _reconstruct_from_shape_uncached(self: TransformRecipe, shape: List[int]) ->
 _reconstruct_from_shape = functools.lru_cache(1024)(_reconstruct_from_shape_uncached)
 
 
-def _apply_recipe(recipe: TransformRecipe, tensor, reduction_type: Reduction):
+def _apply_recipe(recipe: TransformRecipe, tensor: Tensor, reduction_type: Reduction) -> Tensor:
     # this method works for all backends but not compilable with
     backend = get_backend(tensor)
     init_shapes, reduced_axes, axes_reordering, added_axes, final_shapes = \
@@ -236,7 +242,7 @@ def _apply_recipe(recipe: TransformRecipe, tensor, reduction_type: Reduction):
 @functools.lru_cache(256)
 def _prepare_transformation_recipe(pattern: str,
                                    operation: Reduction,
-                                   axes_lengths: Tuple[Tuple]) -> TransformRecipe:
+                                   axes_lengths: Tuple[Tuple, ...]) -> TransformRecipe:
     """ Perform initial parsing of pattern and provided supplementary info
     axes_lengths is a tuple of tuples (axis_name, axis_length)
     """
@@ -246,7 +252,7 @@ def _prepare_transformation_recipe(pattern: str,
 
     # checking that axes are in agreement - new axes appear only in repeat, while disappear only in reduction
     if not left.has_ellipsis and rght.has_ellipsis:
-        raise EinopsError('Ellipsis found in left side, but not right side of a pattern {}'.format(pattern))
+        raise EinopsError('Ellipsis found in right side, but not left side of a pattern {}'.format(pattern))
     if left.has_ellipsis and left.has_ellipsis_parenthesized:
         raise EinopsError('Ellipsis is parenthesis in the left side is not allowed: {}'.format(pattern))
     if operation == 'rearrange':
@@ -346,7 +352,7 @@ def _prepare_transformation_recipe(pattern: str,
     )
 
 
-def reduce(tensor, pattern: str, reduction: Reduction, **axes_lengths: int):
+def reduce(tensor: Tensor, pattern: str, reduction: Reduction, **axes_lengths: int) -> Tensor:
     """
     einops.reduce provides combination of reordering and reduction using reader-friendly notation.
 
@@ -412,6 +418,13 @@ def reduce(tensor, pattern: str, reduction: Reduction, **axes_lengths: int):
         raise EinopsError(message + '\n {}'.format(e))
 
 
+
+@typing.overload
+def rearrange(tensor: Tensor, pattern: str, **axes_length: int) -> Tensor: ...
+@typing.overload
+def rearrange(tensor: List[Tensor], pattern: str, **axes_lengths: int) -> Tensor: ...
+
+
 def rearrange(tensor, pattern: str, **axes_lengths):
     """
     einops.rearrange is a reader-friendly smart element reordering for multidimensional tensors.
@@ -474,7 +487,7 @@ def rearrange(tensor, pattern: str, **axes_lengths):
     return reduce(tensor, pattern, reduction='rearrange', **axes_lengths)
 
 
-def repeat(tensor, pattern: str, **axes_lengths):
+def repeat(tensor: Tensor, pattern: str, **axes_lengths) -> Tensor:
     """
     einops.repeat allows reordering elements and repeating them in arbitrary combinations.
     This operation includes functionality of repeat, tile, broadcast functions.
@@ -550,13 +563,28 @@ def parse_shape(x, pattern: str):
     Returns:
         dict, maps axes names to their lengths
     """
-    names = [elementary_axis for elementary_axis in pattern.split(' ') if len(elementary_axis) > 0]
+    exp = ParsedExpression(pattern, allow_underscore=True)
     shape = get_backend(x).shape(x)
-    if len(shape) != len(names):
-        raise RuntimeError("Can't parse shape with different number of dimensions: {pattern} {shape}".format(
+    if exp.has_composed_axes():
+        raise RuntimeError("Can't parse shape with composite axes: {pattern} {shape}".format(
             pattern=pattern, shape=shape))
+    if len(shape) != len(exp.composition):
+        if exp.has_ellipsis:
+            if len(shape) < len(exp.composition) - 1:
+                raise RuntimeError("Can't parse shape with this number of dimensions: {pattern} {shape}".format(
+                    pattern=pattern, shape=shape))
+        else:
+            raise RuntimeError("Can't parse shape with different number of dimensions: {pattern} {shape}".format(
+                pattern=pattern, shape=shape))
+    if exp.has_ellipsis:
+        ellipsis_idx = exp.composition.index(_ellipsis)
+        composition = (exp.composition[:ellipsis_idx] +
+                       ['_'] * (len(shape) - len(exp.composition) + 1) +
+                       exp.composition[ellipsis_idx+1:])
+    else:
+        composition = exp.composition
     result = {}
-    for axis_name, axis_length in zip(names, shape):
+    for (axis_name, ), axis_length in zip(composition, shape):
         if axis_name != '_':
             result[axis_name] = axis_length
     return result
@@ -585,7 +613,7 @@ def _enumerate_directions(x):
     return result
 
 
-def asnumpy(tensor):
+def asnumpy(tensor) -> 'numpy.ndarray':
     """
     Convert a tensor of an imperative framework (i.e. numpy/cupy/torch/gluon/etc.) to `numpy.ndarray`
 

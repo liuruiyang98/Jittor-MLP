@@ -2,7 +2,7 @@ __author__ = 'Alex Rogozhnikov'
 
 import functools
 
-from ...einops_my.einops import _apply_recipe
+from einops.einops import _apply_recipe
 
 from ..einops import TransformRecipe, _prepare_transformation_recipe
 from .. import EinopsError
