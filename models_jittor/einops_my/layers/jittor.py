@@ -56,7 +56,7 @@ class EinMix(_EinmixMixin, jt.nn.Module):
     def execute(self, input):
         if self.pre_rearrange is not None:
             input = self.pre_rearrange(input)
-        result = jt.array(np.einsum(self.einsum_pattern, input, self.weight))   # no grad, waiting jt.einsum
+        result = jt.linalg.einsum(self.einsum_pattern, input, self.weight)
         if self.bias is not None:
             result += self.bias
         if self.post_rearrange is not None:
