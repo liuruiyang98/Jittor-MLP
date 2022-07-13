@@ -94,6 +94,25 @@ def _no_grad_trunc_normal_(var, mean, std, a, b):
 **Rearrange, Reduce** in [einops](https://github.com/arogozhnikov/einops) for Jittor is support ! Easier to convert Transformer-based and MLP-based models from PyTorch to Jittor!
 
 * from .einops\_my.layers.jittor import Rearrange, Reduce (shown in ./models\_jittor/raft\_mlp.py, ./models\_jittor/sparse\_mlp.py)
+* rearrange, repeat, reduce, parse\_shape for Jitter
+
+```python
+import jittor as jt
+import numpy as np
+from einops_my.einops import rearrange, reduce, repeat, parse_shape
+
+x = jt.zeros([2, 3, 5, 7])
+parse_shape(x, 'batch _ h w')	# {'batch': 2, 'h': 5, 'w': 7}
+
+images = jt.array([np.random.randn(30, 40, 3) for _ in range(32)])
+rearrange(images, 'b h w c -> b h w c').shape		# [32,30,40,3,]
+
+image = jt.array(np.random.randn(30, 40))
+repeat(image, 'h w -> h w c', c=3).shape				# [30,40,3,]
+
+x = jt.array(np.random.randn(2, 32, 64))
+y = reduce(x, 't b c -> b c', 'max')						# [32,64,]												
+```
 
 
 
