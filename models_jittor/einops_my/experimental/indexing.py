@@ -57,7 +57,7 @@ because no appropriate indexing available in the standard.
 
 from typing import List, Union, TypeVar, Tuple
 
-from einops import EinopsError
+from .. import EinopsError
 
 T = TypeVar('T')
 

@@ -11,7 +11,7 @@ Importantly, whole lib is designed so that you can't use it
 from typing import Dict, List
 
 import torch
-from einops.einops import TransformRecipe, _reconstruct_from_shape_uncached
+from .einops import TransformRecipe, _reconstruct_from_shape_uncached
 
 
 class TorchJitBackend:

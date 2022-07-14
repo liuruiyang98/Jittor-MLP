@@ -1,4 +1,4 @@
-from einops import EinopsError
+from . import EinopsError
 import keyword
 import warnings
 from typing import List, Optional, Set, Tuple
